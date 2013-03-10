@@ -6,7 +6,7 @@ Extract the contents of the 7z file directly to your CrashPlan install directory
 For example: C:\Program Files\CrashPlan
 Files:
 .\CrashPlan (Local).lnk
-.\CrashPlan (Mu PC).lnk
+.\CrashPlan (My PC).lnk
 .\CrashPlan (SSH Tunnel).lnk
 .\UISwapper.bat
 .\conf\ui.properties.local
