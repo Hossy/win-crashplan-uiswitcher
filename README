@@ -38,7 +38,7 @@ this:
 application" if it isn't already checked.
 5. Click Save.
 
-On Windows 7, the my.service.xml file is is located at:
+On Windows 7, the my.service.xml file is located at:
 C:\ProgramData\CrashPlan\conf\my.service.xml
 
 1. Stop the CrashPlan Backup Service under Services.
@@ -116,5 +116,5 @@ double-quotes there).
 4. Click the General tab and rename your shortcut as needed.
 5. Click OK.
 
-You're done.  Double-click your shortcut, establish your SSH tunnel when propmted,
+You're done.  Double-click your shortcut, establish your SSH tunnel when prompted,
 and manage your remote CrashPlan instance.
