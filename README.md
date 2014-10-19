@@ -9,7 +9,7 @@ For example: C:\Program Files\CrashPlan
 Files:
 
 - .\CrashPlan (Local).lnk
-- .\CrashPlan (Mu PC).lnk
+- .\CrashPlan (My PC).lnk
 - .\CrashPlan (SSH Tunnel).lnk
 - .\UISwapper.bat
 - .\conf\ui.properties.local
@@ -49,7 +49,7 @@ this:
 
 For more information about securing CrashPlan, check out <http://support.code42.com/CrashPlan/Latest/Configuring/Security>.
 
-On Windows 7, the `my.service.xml` file is is located at:
+On Windows 7, the `my.service.xml` file is located at:
 `C:\ProgramData\CrashPlan\conf\my.service.xml`
 
 1. Stop the CrashPlan Backup Service under Services.
