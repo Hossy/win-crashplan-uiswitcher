@@ -32,12 +32,12 @@ more info about direct connecting below).
 Enabling Remote Management of CrashPlan
 ---------------------------------------
 By default, CrashPlan locks itself down to only be managed locally.  This can be
-changed by editing the `my.service.xml` file.  This must be done on every machine you
-intend to manage remotely.
+changed by editing the `my.service.xml` file.  This must be done on every machine
+you intend to manage remotely.
 
 **WARNING:** Doing this will cause CrashPlan to accept remote connections from
-anywhere.  Be sure you understand what this means.  It is **HIGHLY** recommended that
-you enable the option to require a password for the desktop application. To do
+anywhere.  Be sure you understand what this means.  It is **HIGHLY** recommended
+that you enable the option to require a password for the desktop application. To do
 this:
 
 1. Open CrashPlan.
@@ -55,7 +55,9 @@ On Windows 7, the `my.service.xml` file is located at:
 1. Stop the CrashPlan Backup Service under Services.
    - You can also do this by running: `net stop CrashPlanService`
 2. Create a backup copy of your `my.service.xml` file.
-3. Open the `my.service.xml` file and locate the line: `<serviceHost>127.0.0.1</serviceHost>`.  It should be under the `<serviceUIConfig>` section.
+3. Open the `my.service.xml` file and locate the line:
+   `<serviceHost>127.0.0.1</serviceHost>`.  It should be under the
+   `<serviceUIConfig>` section.
 4. Change 127.0.0.1 to 0.0.0.0.
    - Old line: `<serviceHost>127.0.0.1</serviceHost>`
    - New line: `<serviceHost>0.0.0.0</serviceHost>`
@@ -69,20 +71,22 @@ That's it.  Remote Management is now enabled.  Now, let's actually use it.
 Direct Connecting
 -----------------
 CrashPlan uses the `conf\ui.properties` file to determine where it should connect.
-`UISwapper.bat` switches out the `ui.properties` file to redirect CrashPlan to another
-computer.
+`UISwapper.bat` switches out the `ui.properties` file to redirect CrashPlan to
+another computer.
 
-**NOTE:** The `ui.properties` file does not affect your CrashPlan Tray icon.  That will
-always display information for your local instance.
+**NOTE:** The `ui.properties` file does not affect your CrashPlan Tray icon.  That
+will always display information for your local instance.
 
 Use `.\conf\ui.properties.mypc` as a template for direct connections:
 
 1. Open `ui.properties.mypc` in a text editor like Notepad.
    - Notice the only uncommented line (lines not beginning with #) is line 2:
-     `serviceHost=MYPC`.  This instructs CrashPlan to lookup the IP for MYPC and connect to that computer.
+     `serviceHost=MYPC`.  This instructs CrashPlan to lookup the IP for MYPC and
+	 connect to that computer.
 2. Change "MYPC" in line 2 to the name or IP address of the remote computer.
-3. Save the file with a new name in the format `ui.properties.<identifier>` (without
-   the angle brackets).  Replace `<identifier>` with something meaningful to you (no spaces).
+3. Save the file with a new name in the format `ui.properties.<identifier>`
+   (without the angle brackets).  Replace `<identifier>` with something meaningful
+   to you (no spaces).
 
 Use `.\CrashPlan (My PC).lnk` as a shortcut template for direct connections:
 
@@ -113,11 +117,12 @@ Use `.\conf\ui.properties.sshtunnel` as a template for SSH tunnel connections:
 
 1. Open `ui.properties.sshtunnel` in a text editor like Notepad.
    - Notice the only uncommented line (lines not beginning with `#`) is line 3:
-`servicePort=4200`.  This instructs CrashPlan to use local port 4200 to connect to the CrashPlan Backup
-Service.
+     `servicePort=4200`.  This instructs CrashPlan to use local port 4200 to
+	 connect to the CrashPlan Backup Service.
 2. Change "4200" in line 3 to the local port you specified in your SSH Tunnel config.
-3. Save the file with a new name in the format `ui.properties.<identifier>` (without
-   the angle brackets).  Replace `<identifier>` with something meaningful to you (no spaces).
+3. Save the file with a new name in the format `ui.properties.<identifier>`
+   (without the angle brackets).  Replace `<identifier>` with something meaningful
+   to you (no spaces).
 
 Use `.\CrashPlan (SSH Tunnel).lnk` as a shortcut template for direct connections:
 
