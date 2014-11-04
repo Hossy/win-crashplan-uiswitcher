@@ -1,4 +1,4 @@
-UISwitcher 1.0 by Hossy
+UISwitcher 1.1 by Hossy
 =======================
 
 Installation
@@ -21,8 +21,8 @@ There are three example shortcuts created:
 - CrashPlan (Local)
   - This launches CrashPlan to manage your local instance.
 - CrashPlan (My PC)
-  - This launches CrashPlan to manage a computer named MYPC (see
-more info about direct connecting below).
+  - This launches CrashPlan to manage a computer named MYPC (see more info about
+    direct connecting below).
 - CrashPlan (SSH Tunnel)
   - This launches a PuTTY session named "Putty Session Name Here" then launches
     CrashPlan and connects through that tunnel (see more info about SSH Tunnel
@@ -140,7 +140,7 @@ and manage your remote CrashPlan instance.
 
 Copyright
 ---------
-Copyright 2012 Hossy
+Copyright 2012,2014 Hossy
 
 `UISwitcher` is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -157,5 +157,8 @@ along with `UISwitcher`.  If not, see <http://www.gnu.org/licenses/>.
 
 Change Log
 ----------
+### v1.1 ###
+- Fixed problem running on Windows 8
+
 ### v1.0 ###
 - Initial commit
