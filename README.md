@@ -1,20 +1,18 @@
-UISwitcher 1.1 by Hossy
+UISwitcher 1.2 by Hossy
 =======================
 
 Installation
 ------------
 Extract the contents of the 7z file directly to your CrashPlan install directory.
-For example: C:\Program Files\CrashPlan
+For example: C:\Program Files\CrashPlan\UISwapper
 
 Files:
 
 - .\CrashPlan (Local).lnk
 - .\CrashPlan (My PC).lnk
 - .\CrashPlan (SSH Tunnel).lnk
+- .\sed.exe
 - .\UISwapper.bat
-- .\conf\ui.properties.local
-- .\conf\ui.properties.mypc
-- .\conf\ui.properties.sshtunnel
 
 There are three example shortcuts created:
 
@@ -27,6 +25,23 @@ There are three example shortcuts created:
   - This launches a PuTTY session named "Putty Session Name Here" then launches
     CrashPlan and connects through that tunnel (see more info about SSH Tunnel
     below).
+
+
+Background
+----------
+CrashPlan uses the `conf\ui.properties` and
+`%ProgramData%\CrashPlan\conf\ui_%USERNAME%.properties` files to determine where it
+should connect and a key (guid from `.ui_info`) to authenticate that connection (as
+of CrashPlan 4.3).  `UISwapper.bat` updates the `ui.properties`, `.ui_info`, and
+`ui_[USERNAME].properties` files to redirect CrashPlan to another computer.
+
+**IMPORTANT:** The first time you run UISwapper it will create ".local" versions of
+the three files mentioned above.  BEFORE running UISwapper for the first time,
+verify that these .local files do not exist and that your CrashPlan UI is
+connecting to your local instance without issue.
+
+**NOTE:** The changes made by `UISwapper.bat` do not affect your CrashPlan Tray
+icon.  That will always display information for your local instance.
 
 
 Enabling Remote Management of CrashPlan
@@ -49,8 +64,8 @@ this:
 
 For more information about securing CrashPlan, check out <http://support.code42.com/CrashPlan/Latest/Configuring/Security>.
 
-On Windows 7, the `my.service.xml` file is located at:
-`C:\ProgramData\CrashPlan\conf\my.service.xml`
+On Windows, the `my.service.xml` file is located at:
+`%ProgramData%\CrashPlan\conf\my.service.xml`
 
 1. Stop the CrashPlan Backup Service under Services.
    - You can also do this by running: `net stop CrashPlanService`
@@ -68,32 +83,31 @@ On Windows 7, the `my.service.xml` file is located at:
 That's it.  Remote Management is now enabled.  Now, let's actually use it.
 
 
+Gathering the connection key (guid) from the remote computer
+------------------------------------------------------------
+The connection key is located within the `.ui_info` file.  The format of this file
+is `<port>,<guid>` -- you only need the `<guid>` portion.
+
+`.ui_info` file locations:
+
+- Windows: `%ProgramData%\CrashPlan\.ui_info`
+- Linux: `/var/lib/crashplan/.ui_info`
+- Mac: `/Library/Application Support/CrashPlan/.ui_info` (need to have finder set
+to show hidden files)
+
+
 Direct Connecting
 -----------------
-CrashPlan uses the `conf\ui.properties` file to determine where it should connect.
-`UISwapper.bat` switches out the `ui.properties` file to redirect CrashPlan to
-another computer.
-
-**NOTE:** The `ui.properties` file does not affect your CrashPlan Tray icon.  That
-will always display information for your local instance.
-
-Use `.\conf\ui.properties.mypc` as a template for direct connections:
-
-1. Open `ui.properties.mypc` in a text editor like Notepad.
-   - Notice the only uncommented line (lines not beginning with #) is line 2:
-     `serviceHost=MYPC`.  This instructs CrashPlan to lookup the IP for MYPC and
-	 connect to that computer.
-2. Change "MYPC" in line 2 to the name or IP address of the remote computer.
-3. Save the file with a new name in the format `ui.properties.<identifier>`
-   (without the angle brackets).  Replace `<identifier>` with something meaningful
-   to you (no spaces).
+### Instructions ###
 
 Use `.\CrashPlan (My PC).lnk` as a shortcut template for direct connections:
 
 1. Create a copy of the shortcut.
 2. Right-click the copy and choose Properties.
-3. In the Target field on the Shortcut tab, change "mypc" to be the `<identifier>`
-   you chose above.
+3. In the `Target` field on the `Shortcut` tab:
+   - Change "mypc" to be IP or hostname of the remote computer.
+   - Replace the GUID after `/uiinfoguid` with the connection key from the remote
+     computer.
 4. Click the General tab and rename your shortcut as needed.
 5. Click OK.
 
@@ -111,36 +125,40 @@ Use the references above to create your PuTTY SSH Tunnel saved session.  You wil
 need the saved session name and the local port you chose.  CrashPlan's
 documentation uses local port 4200.
 
-### Instructions ###
-
-Use `.\conf\ui.properties.sshtunnel` as a template for SSH tunnel connections:
-
-1. Open `ui.properties.sshtunnel` in a text editor like Notepad.
-   - Notice the only uncommented line (lines not beginning with `#`) is line 3:
-     `servicePort=4200`.  This instructs CrashPlan to use local port 4200 to
-	 connect to the CrashPlan Backup Service.
-2. Change "4200" in line 3 to the local port you specified in your SSH Tunnel config.
-3. Save the file with a new name in the format `ui.properties.<identifier>`
-   (without the angle brackets).  Replace `<identifier>` with something meaningful
-   to you (no spaces).
+#### Configure shortcut to connect to CrashPlan ####
 
 Use `.\CrashPlan (SSH Tunnel).lnk` as a shortcut template for direct connections:
 
 1. Create a copy of the shortcut.
 2. Right-click the copy and choose `Properties`.
 3. In the `Target` field on the `Shortcut` tab:
-   - Change "sshtunnel" to be the `<identifier>` you chose above.
-   - Change "Putty Session Name Here" to your PuTTY saved session (leave the
-     double-quotes there).
+   - Change "12345" (after `/port`) to the local port you specified in your SSH
+     Tunnel config.
+   - Change "Putty Session Name Here" (after `/putty`) to your PuTTY saved session
+     (leave the double-quotes there).
+   - Replace the GUID after `/uiinfoguid` with the connection key from the remote
+     computer.
 4. Click the `General` tab and rename your shortcut as needed.
 5. Click OK.
 
 You're done.  Double-click your shortcut, establish your SSH tunnel when prompted,
 and manage your remote CrashPlan instance.
 
+
+Troubleshooting
+---------------
+If you experience problems connecting to your local instance with UISwapper, please
+confirm against your three ".local" files that the servicePort is 4243.  If the
+value is other than 4243, you will need to modify `UISwapper.bat` and change the
+line that reads `SET _SVCPORT=4243` to the appropriate port.  If this still fails,
+try reinstalling the CrashPlan UI on your computer, delete the three ".local"
+files, check the servicePort within `conf\ui.properties` and update `UISwapper.bat`
+is necessary, and try again.
+
+
 Copyright
 ---------
-Copyright 2012,2014 Hossy
+Copyright 2012,2014-2015 Hossy
 
 `UISwitcher` is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -157,6 +175,9 @@ along with `UISwitcher`.  If not, see <http://www.gnu.org/licenses/>.
 
 Change Log
 ----------
+### v1.2 ###
+- Updated UISwapper to handle new connection security feature in CrashPlan 4.3+.
+
 ### v1.1 ###
 - Fixed problem running on Windows 8
 
