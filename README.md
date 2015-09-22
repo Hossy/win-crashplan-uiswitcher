@@ -1,4 +1,4 @@
-UISwitcher 1.2 by Hossy
+UISwitcher 1.3 by Hossy
 =======================
 
 Installation
@@ -35,14 +35,41 @@ should connect and a key (guid from `.ui_info`) to authenticate that connection 
 of CrashPlan 4.3).  `UISwapper.bat` updates the `ui.properties`, `.ui_info`, and
 `ui_[USERNAME].properties` files to redirect CrashPlan to another computer.
 
+`UISwapper.bat` also monitors changes to the `.identity` file as a precaution.  If
+this file substantially changes, it could mean that file changes outside what
+`UISwapper.bat` is monitoring will cause your local instance to stop working.
+Because of this and the newness of this new security system, I've built in a
+fail-safe to halt `UISwapper.bat` until you can manually verify connectivity and
+functionality of your local instance (and backup files as needed).  This feature
+may go away in the future if I'm able to determine it really isn't needed.
+
 **IMPORTANT:** The first time you run UISwapper it will create ".local" versions of
-the three files mentioned above.  BEFORE running UISwapper for the first time,
+the four files mentioned above.  BEFORE running UISwapper for the first time,
 verify that these .local files do not exist and that your CrashPlan UI is
 connecting to your local instance without issue.
 
 **NOTE:** The changes made by `UISwapper.bat` do not affect your CrashPlan Tray
 icon.  That will always display information for your local instance.
 
+
+### CrashPlan Bug in 4.3.0 ###
+As I just discovered today (9/22/2015), there is a bug within CrashPlan if you
+change the listening port even under the supported procedure (e.g. [Known Conflict Between The CrashPlan App And Juniper Network Connect On Windows](http://support.code42.com/CrashPlan/Latest/Troubleshooting/Known_Conflict_Between_The_CrashPlan_App_And_Juniper_Network_Connect_On_Windows)).
+The bug is that when you change the listening port, the
+`%ProgramData%\CrashPlan\conf\ui_%USERNAME%.properties` file is not properly
+updated to reflect the change.  While this doesn't break the CrashPlan service
+itself, it prevents the UI from connecting to the local instance.
+
+I have written a procedure within `UISwapper.bat` that detects a port change and
+will fix the `%ProgramData%\CrashPlan\conf\ui_%USERNAME%.properties` file to keep
+the UI working on the local instance.  As a precaution, this procedure will only
+run if the CrashPlan instance is 4.3.0.  My hope is that the next release of
+CrashPlan will fix this bug.  If it doesn't, I will post a new version of the
+script to handle the updated version.  For the foreseeable future, I plan on
+keeping the bug fix procedure version-specific to prevent future problems.
+
+You can always fix the bug manually by editing the servicePort line in the
+`%ProgramData%\CrashPlan\conf\ui_%USERNAME%.properties` file and restarting the UI.
 
 Enabling Remote Management of CrashPlan
 ---------------------------------------
@@ -62,7 +89,7 @@ this:
    application" if it isn't already checked.
 5. Click Save.
 
-For more information about securing CrashPlan, check out <http://support.code42.com/CrashPlan/Latest/Configuring/Security>.
+For more information about securing CrashPlan, check out [Security Settings Reference](http://support.code42.com/CrashPlan/Latest/CrashPlan_App_Reference/Security_Settings_Reference).
 
 On Windows, the `my.service.xml` file is located at:
 `%ProgramData%\CrashPlan\conf\my.service.xml`
@@ -118,8 +145,8 @@ Connecting Through an SSH Tunnel
 --------------------------------
 ### References ###
 
-- <http://support.crashplan.com/doku.php/how_to/configure_a_headless_client>
-- <http://the.earth.li/~sgtatham/putty/0.62/htmldoc/Chapter4.html#config-saving>
+- [Using CrashPlan On A Headless Computer](http://support.crashplan.com/doku.php/how_to/configure_a_headless_client)
+- [Configuring PuTTY: 4.1.2 Loading and storing saved sessions](http://the.earth.li/~sgtatham/putty/0.62/htmldoc/Chapter4.html#config-saving)
 
 Use the references above to create your PuTTY SSH Tunnel saved session.  You will
 need the saved session name and the local port you chose.  CrashPlan's
@@ -175,6 +202,14 @@ along with `UISwitcher`.  If not, see <http://www.gnu.org/licenses/>.
 
 Change Log
 ----------
+### v1.3 ###
+- Added /resetlocal switch to allow manual cleanup/reset of the .local files.
+- Added monitor for .identity file as a precaution against potentially unmonitored
+changes.
+- Added check for CrashPlan listening port changes
+- Added procedure to fix CrashPlan 4.3.0 bug when changing the listening port
+- Fixed potential problem with regular expressions
+
 ### v1.2 ###
 - Updated UISwapper to handle new connection security feature in CrashPlan 4.3+.
 
