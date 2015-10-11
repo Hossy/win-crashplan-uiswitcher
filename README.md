@@ -1,4 +1,4 @@
-UISwitcher 1.3 by Hossy
+UISwitcher 1.4 by Hossy
 =======================
 
 Installation
@@ -32,7 +32,7 @@ Background
 CrashPlan uses the `conf\ui.properties` and
 `%ProgramData%\CrashPlan\conf\ui_%USERNAME%.properties` files to determine where it
 should connect and a key (guid from `.ui_info`) to authenticate that connection (as
-of CrashPlan 4.3).  `UISwapper.bat` updates the `ui.properties`, `.ui_info`, and
+of CrashPlan 4.3).  `UISwapper.bat` updates the `.ui_info` and
 `ui_[USERNAME].properties` files to redirect CrashPlan to another computer.
 
 `UISwapper.bat` also monitors changes to the `.identity` file as a precaution.  If
@@ -43,17 +43,17 @@ fail-safe to halt `UISwapper.bat` until you can manually verify connectivity and
 functionality of your local instance (and backup files as needed).  This feature
 may go away in the future if I'm able to determine it really isn't needed.
 
-**IMPORTANT:** The first time you run UISwapper it will create ".local" versions of
-the four files mentioned above.  BEFORE running UISwapper for the first time,
-verify that these .local files do not exist and that your CrashPlan UI is
-connecting to your local instance without issue.
+**IMPORTANT:** The first time you run `UISwapper.bat` it will create ".local"
+versions of the four files mentioned above.  BEFORE running `UISwapper.bat` for the
+first time, verify that these .local files do not exist and that your CrashPlan UI
+is connecting to your local instance without issue.
 
 **NOTE:** The changes made by `UISwapper.bat` do not affect your CrashPlan Tray
 icon.  That will always display information for your local instance.
 
 
 ### CrashPlan Bug in 4.3.0 ###
-As I just discovered today (9/22/2015), there is a bug within CrashPlan if you
+As I recently discovered (on 9/22/2015), there is a bug within CrashPlan if you
 change the listening port even under the supported procedure (e.g. [Known Conflict Between The CrashPlan App And Juniper Network Connect On Windows](http://support.code42.com/CrashPlan/Latest/Troubleshooting/Known_Conflict_Between_The_CrashPlan_App_And_Juniper_Network_Connect_On_Windows)).
 The bug is that when you change the listening port, the
 `%ProgramData%\CrashPlan\conf\ui_%USERNAME%.properties` file is not properly
@@ -63,8 +63,8 @@ itself, it prevents the UI from connecting to the local instance.
 I have written a procedure within `UISwapper.bat` that detects a port change and
 will fix the `%ProgramData%\CrashPlan\conf\ui_%USERNAME%.properties` file to keep
 the UI working on the local instance.  As a precaution, this procedure will only
-run if the CrashPlan instance is 4.3.0.  My hope is that the next release of
-CrashPlan will fix this bug.  If it doesn't, I will post a new version of the
+run on specific versions of CrashPlan.  My hope is that the next release of
+CrashPlan will fix this bug.  If it isn't fixed, I will post a new version of the
 script to handle the updated version.  For the foreseeable future, I plan on
 keeping the bug fix procedure version-specific to prevent future problems.
 
@@ -98,10 +98,12 @@ On Windows, the `my.service.xml` file is located at:
    - You can also do this by running: `net stop CrashPlanService`
 2. Create a backup copy of your `my.service.xml` file.
 3. Open the `my.service.xml` file and locate the line:
-   `<serviceHost>127.0.0.1</serviceHost>`.  It should be under the
+   `<serviceHost>127.0.0.1</serviceHost>` or
+   `<serviceHost>localhost</serviceHost>`.  It should be under the
    `<serviceUIConfig>` section.
 4. Change 127.0.0.1 to 0.0.0.0.
    - Old line: `<serviceHost>127.0.0.1</serviceHost>`
+   - Old line (new version): `<serviceHost>localhost</serviceHost>`
    - New line: `<serviceHost>0.0.0.0</serviceHost>`
 5. Save the file.
 6. Start the CrashPlan Backup Service.
@@ -113,7 +115,7 @@ That's it.  Remote Management is now enabled.  Now, let's actually use it.
 Gathering the connection key (guid) from the remote computer
 ------------------------------------------------------------
 The connection key is located within the `.ui_info` file.  The format of this file
-is `<port>,<guid>` -- you only need the `<guid>` portion.
+is `<port>,<guid>,<target>` -- you only need the `<guid>` portion.
 
 `.ui_info` file locations:
 
@@ -175,12 +177,10 @@ and manage your remote CrashPlan instance.
 Troubleshooting
 ---------------
 If you experience problems connecting to your local instance with UISwapper, please
-confirm against your three ".local" files that the servicePort is 4243.  If the
-value is other than 4243, you will need to modify `UISwapper.bat` and change the
-line that reads `SET _SVCPORT=4243` to the appropriate port.  If this still fails,
-try reinstalling the CrashPlan UI on your computer, delete the three ".local"
-files, check the servicePort within `conf\ui.properties` and update `UISwapper.bat`
-is necessary, and try again.
+confirm against your two ".local" files that the port matches the servicePort
+defined in your `my.service.xml` file.  If this still fails, try reinstalling the
+CrashPlan UI on your computer, run `UISwapper.bat /resetlocal`, check the port
+within `.ui_info` and your `my.service.xml` files, and try again.
 
 
 Copyright
@@ -202,6 +202,12 @@ along with `UISwitcher`.  If not, see <http://www.gnu.org/licenses/>.
 
 Change Log
 ----------
+### v1.4 ###
+- Removed changes to the `ui.properties` file as it appears to be no longer used.
+- Removed unreachable code
+- Fixed Issue #1 - Modified `ui.info` file changes to accommodate new format.
+- Add version 4.4.1 to the bug fix code
+ 
 ### v1.3 ###
 - Added /resetlocal switch to allow manual cleanup/reset of the .local files.
 - Added monitor for .identity file as a precaution against potentially unmonitored

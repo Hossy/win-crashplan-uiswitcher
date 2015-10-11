@@ -8,7 +8,7 @@ IF /I "%~1"=="" GOTO :EOF
 SET _N0=%~n0
 SET _DP0=%~dp0
 SET _SEDEXE=%_DP0%sed.exe
-SET _UIPROP=%_DP0%..\conf\ui.properties
+::SET _UIPROP=%_DP0%..\conf\ui.properties
 SET _UIINFO=%ProgramData%\CrashPlan\.ui_info
 SET _UIUSERPROP=%ProgramData%\CrashPlan\conf\ui_%USERNAME%.properties
 SET _IDENTITY=%ProgramData%\CrashPlan\.identity
@@ -35,7 +35,6 @@ IF /I "%~1"=="/local" (
 )
 IF DEFINED _LOCAL IF /I NOT "%~1"=="" ECHO Cannot combine other options with /local.& PAUSE & GOTO :EOF
 IF /I "%~1"=="/host" (
-	IF DEFINED _LOCAL GOTO :syn
 	SET _SVCHOST=%~2
 	SHIFT & SHIFT
 )
@@ -65,7 +64,7 @@ IF NOT DEFINED _LOCAL IF NOT DEFINED _UIINFOGUID ECHO /uiinfoguid is required& P
 ::IF NOT EXIST "ui_USERNAME.properties.%~1" ECHO Local ui_USERNAME.properties.%~1 file missing.  Aborting.& PAUSE & GOTO :EOF
 
 ::Check for CrashPlan files
-IF NOT EXIST "%_UIPROP%" ECHO Can't find ui.properties file at "%_UIPROP%".  Aborting.& PAUSE & GOTO :EOF
+::IF NOT EXIST "%_UIPROP%" ECHO Can't find ui.properties file at "%_UIPROP%".  Aborting.& PAUSE & GOTO :EOF
 IF NOT EXIST "%_UIINFO%" ECHO Can't find .ui_info file at "%_UIINFO%".  Aborting.& PAUSE & GOTO :EOF
 IF NOT EXIST "%_UIUSERPROP%" ECHO Can't find ui_%USERNAME%.properties file at "%_UIUSERPROP%".  Aborting.& PAUSE & GOTO :EOF
 IF NOT EXIST "%_IDENTITY%" ECHO Can't find .identity file at "%_IDENTITY%".  Aborting.& PAUSE & GOTO :EOF
@@ -84,7 +83,7 @@ IF ERRORLEVEL 1 (
 		ECHO .identity file has changed.  Aborting.
 		ECHO Check all data files and run %_N0% /resetlocal to reset.
 		PAUSE
-		START "ProgramFiles-conf" "%_DP0%..\conf"
+		REM START "ProgramFiles-conf" "%_DP0%..\conf"
 		START "ProgramData" "%ProgramData%\CrashPlan"
 		START "ProgramData-conf" "%ProgramData%\CrashPlan\conf"
 		GOTO :EOF
@@ -117,14 +116,14 @@ TASKKILL /F /IM CrashPlanDesktop.exe /T
 
 ::Update UI files
 IF DEFINED _LOCAL (
-	COPY /Y "%_UIPROP%.local" "%_UIPROP%"
+	REM COPY /Y "%_UIPROP%.local" "%_UIPROP%"
 	COPY /Y "%_UIINFO%.local" "%_UIINFO%"
 	COPY /Y "%_UIUSERPROP%.local" "%_UIUSERPROP%"
 ) ELSE (
-	"%_SEDEXE%" -ri.bak "s/^#?(serviceHost=).*/\1%_SVCHOST%/" "%_UIPROP%"
-	"%_SEDEXE%" -ri.bak "s/^#?(servicePort=).*/\1%_SVCPORT%/" "%_UIPROP%"
+	REM "%_SEDEXE%" -ri.bak "s/^#?(serviceHost=).*/\1%_SVCHOST%/" "%_UIPROP%"
+	REM "%_SEDEXE%" -ri.bak "s/^#?(servicePort=).*/\1%_SVCPORT%/" "%_UIPROP%"
 	"%_SEDEXE%" -ri.bak "s/^#?(servicePort=).*/\1%_SVCPORT%/" "%_UIUSERPROP%"
-	"%_SEDEXE%" -ri.bak "s/^([0-9]+),.*/\1,%_UIINFOGUID%/" "%_UIINFO%"
+	"%_SEDEXE%" -ri.bak "s/^[0-9]+,.*?,.*/%_SVCPORT%,%_UIINFOGUID%,%_SVCHOST%/" "%_UIINFO%"
 )
 
 ::Launch PuTTY
@@ -139,19 +138,19 @@ GOTO :EOF
 
 :resetlocal
 ECHO Deleting local files...
-IF EXIST "%_UIPROP%.local" ERASE /Q "%_UIPROP%.local"
+::IF EXIST "%_UIPROP%.local" ERASE /Q "%_UIPROP%.local"
 IF EXIST "%_UIINFO%.local" ERASE /Q "%_UIINFO%.local"
 IF EXIST "%_UIUSERPROP%.local" ERASE /Q "%_UIUSERPROP%.local"
 IF EXIST "%_IDENTITY%.local" ERASE /Q "%_IDENTITY%.local"
 ECHO Deleting .bak files...
-IF EXIST "%_UIPROP%.bak" ERASE /Q "%_UIPROP%.bak"
+::IF EXIST "%_UIPROP%.bak" ERASE /Q "%_UIPROP%.bak"
 IF EXIST "%_UIINFO%.bak" ERASE /Q "%_UIINFO%.bak"
 IF EXIST "%_UIUSERPROP%.bak" ERASE /Q "%_UIUSERPROP%.bak"
 IF EXIST "%_IDENTITY%.bak" ERASE /Q "%_IDENTITY%.bak"
 GOTO :EOF
 
 :updatelocal
-IF NOT EXIST "%_UIPROP%.local" COPY "%_UIPROP%" "%_UIPROP%.local"
+::IF NOT EXIST "%_UIPROP%.local" COPY "%_UIPROP%" "%_UIPROP%.local"
 IF NOT EXIST "%_UIINFO%.local" COPY "%_UIINFO%" "%_UIINFO%.local"
 IF NOT EXIST "%_UIUSERPROP%.local" COPY "%_UIUSERPROP%" "%_UIUSERPROP%.local"
 IF NOT EXIST "%_IDENTITY%.local" COPY "%_IDENTITY%" "%_IDENTITY%.local"
@@ -160,6 +159,7 @@ GOTO :EOF
 :fixcpbug
 SET _FIXCPBUG=
 IF /I "%_XMLVER%"=="1427864410430" SET _FIXCPBUG=TRUE
+IF /I "%_XMLVER%"=="1435726800441" SET _FIXCPBUG=TRUE
 IF NOT DEFINED _FIXCPBUG GOTO :EOF
 ::CrashPlan 4.3.0 fails to update the ui_%USERNAME%.properties file with the new servicePort upon port change.
 ECHO Fixing CrashPlan bug with %_UIUSERPROP%
